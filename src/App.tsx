@@ -1,24 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { useQuery } from "react-query";
 
-function App() {
+// components
+import Item from './components/Item'
+
+//types
+export type CartItemType = {
+  id: number;
+  category: string;
+  description: string;
+  image: string;
+  price: number;
+  title: string;
+  amount: number;
+};
+
+const getProducts = async (): Promise<CartItemType[]> =>
+  await (await fetch('https://fakestoreapi.com/products')).json();
+
+
+const App = () => {
+
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([] as CartItemType[])
+
+  const { data, isLoading, error } = useQuery<CartItemType[]>('products', getProducts)
+  console.log(data)
+
+  const getTotalItems = () => null;
+
+  const handleAddToCart = (clickedItem: CartItemType) => null;
+
+  const handleRemoveFromCart = () => null;
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="grid p-6 justify-items-start  content-start sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 h-full gap-4">
+      {data?.map((item) => (
+        <Item key={item.id} item={item} handleAddToCart={handleAddToCart} />
+      ))}
     </div>
   );
 }
